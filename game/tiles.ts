@@ -77,11 +77,11 @@ export const TILE_IMAGES: Record<number, string> = {
   9 : '/images/lampu.png',  // Kotak 25 akan selalu punya gambar lampu
   51: '/images/Tangan.png',
   1 : '/images/Start.png',
-  100 : '/images/Finish.png',
+  100 :'/images/Finish.png',
   76 : '/images/never.png',
   45: '/images/tengkorak.png',
-  89: '/images/bingkai 1.png',
-  88: '/images/bingkai 2.png',
-  72: '/images/bingkai 3.png',
-  73: '/images/bingkai 4.png' // Tambahkan nomor kotak dan path gambarnya di sini
+  89: '/images/bingkai1.png',
+  88: '/images/bingkai2.png',
+  72: '/images/bingkai3.png',
+  73: '/images/bingkai4.png' // Tambahkan nomor kotak dan path gambarnya di sini
 };
