@@ -80,8 +80,8 @@ export const TILE_IMAGES: Record<number, string> = {
   100 :'/images/Finish.png',
   76 : '/images/Never.png',
   45: '/images/Tengkorak.png',
-  89: '/images/Bingkai1.png',
-  88: '/images/Bingkai2.png',
-  72: '/images/Bingkai3.png',
-  73: '/images/Bingkai4.png' // Tambahkan nomor kotak dan path gambarnya di sini
+  // 89: '/images/Bingkai1.png',
+  // 88: '/images/Bingkai2.png',
+  // 72: '/images/Bingkai3.png',
+  // 73: '/images/Bingkai4.png' // Tambahkan nomor kotak dan path gambarnya di sini
 };
