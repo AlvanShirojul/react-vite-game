@@ -11,12 +11,12 @@ export const SNAKES_AND_LADDERS: Record<number, number> = {
   55: 74,
 
   // Snakes
-  17: 7,
-  54: 34,
-  62: 19,
+  16: 7,
+  54: 32,
+  43: 19,
   64: 60,
   95: 75,
-  99: 78,
+  99: 77,
   12: 8,
 };
 

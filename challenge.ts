@@ -1,7 +1,7 @@
 import type { Challenge } from './types';
 
 export const CHALLENGES: Challenge[] = [
-{ Challenge: "Sebutkan dua kebiasaan belajar yang perlu kamu ubah agar prestasi belajarmu meningkat!" },
+  { Challenge: "Sebutkan dua kebiasaan belajar yang perlu kamu ubah agar prestasi belajarmu meningkat!" },
   { Challenge: "Tuliskan satu kegagalan belajarmu, lalu sebutkan tiga tindakan agar tidak terulang!" },
   { Challenge: "Sebutkan tiga alasan utama mengapa kamu tetap perlu belajar meskipun sedang tidak mood!" },
   { Challenge: "Tuliskan satu strategi belajar yang paling efektif menurut pengalamanmu saat ini!" },

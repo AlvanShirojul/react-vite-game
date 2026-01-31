@@ -23,8 +23,6 @@ export interface Player {
 
 export interface Question {
     question: string;
-    options: string[];
-    answer: string;
 }
 export interface Challenge {
     Challenge: string;

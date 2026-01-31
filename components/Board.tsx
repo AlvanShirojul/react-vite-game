@@ -95,29 +95,88 @@ interface SnakeProps {
 
 // FIX: Changed component definition to use React.FC to correctly type props and handle the 'key' prop.
 const Snake: React.FC<SnakeProps> = ({ from, to, style }) => {
-    const start = getSquareCoords(from);
-    const end = getSquareCoords(to);
-    const startX = start.x * 10 + 5;
-    const startY = start.y * 10 + 5;
+  const start = getSquareCoords(from);
+  const end = getSquareCoords(to);
+  
+  // Koordinat skala grid
+    const startX = start.x * 10 + 3;
+    const startY = start.y * 10 + 8;
     const endX = end.x * 10 + 5;
     const endY = end.y * 10 + 5;
-    const midX1 = startX + (endX - startX) * 0.25 + (startY - endY) * 0.2;
-    const midY1 = startY + (endY - startY) * 0.25 + (endX - startX) * 0.2;
-    const midX2 = startX + (endX - startX) * 0.75 - (startY - endY) * 0.2;
-    const midY2 = startY + (endY - startY) * 0.75 - (endX - startX) * 0.2;
-    const pathData = `M ${startX} ${startY} C ${midX1} ${midY1}, ${midX2} ${midY2}, ${endX} ${endY}`;
-    const headAngle = (Math.atan2(midY1 - startY, midX1 - startX) * 180) / Math.PI;
-    return (
-        <g>
-            <path d={pathData} fill="none" stroke={style.stroke} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" opacity="0.5" />
-            <path d={pathData} fill="none" stroke={style.fill} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            <g transform={`translate(${startX}, ${startY}) rotate(${headAngle})`}>
-                <path d="M -1 -2 C 2 -2.5, 4 0, 2 2.5 L -1 2 Z" fill={style.stroke} />
-                <circle cx="2.5" cy="-1" r="0.4" fill="#fef08a" />
-                <circle cx="2.5" cy="1" r="0.4" fill="#fef08a" />
-            </g>
-        </g>
-    );
+    const dx = endX - startX;
+const dy = endY - startY;
+const length = Math.sqrt(dx * dx + dy * dy);
+
+  // Vektor normal untuk kelokan
+  const nx = -dy / length;
+  const ny = dx / length;
+
+  // KONFIGURASI BENTUK
+  const waves = 4;     
+  const amplitude = 6;  
+  const segments = 120;   // Semakin tinggi semakin mulus
+  
+  let pointsArray: {x: number, y: number}[] = [];
+  let pathData = `M ${startX} ${startY}`;
+
+  for (let i = 0; i <= segments; i++) {
+    const t = i / segments;
+    // Menggunakan Sinus untuk kelokan badan
+    const waveOffset = Math.sin(t * Math.PI * waves) * amplitude * Math.sin(t * Math.PI);    
+    const x = startX + dx * t + nx * waveOffset;
+    const y = startY + dy * t + ny * waveOffset;
+    
+    pointsArray.push({x, y});
+    if (i > 0) {
+        pathData += ` L ${x} ${y}`;
+    }
+  }
+
+  return (
+    <g>
+      {/* BADAN UTAMA */}
+          <path
+      d={pathData}
+      fill="none"
+      stroke={'black'}
+      strokeWidth={2.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      opacity ='50'
+    />
+      <path
+        d={pathData}
+        fill="none"
+        stroke={style.fill} // Warna Hijau (#6d965e dari gambar)
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      
+      {/* KEPALA ULAR (Di ujung 'TO') */}
+        <g transform={`translate(${startX}, ${startY}) rotate(280) scale(0.75)`}>        
+            {/* Lidah Bercabang */}
+        <path
+          d="M 2 0 L 5 0 M 5 0 L 7 -1.5 M 5 0 L 7 1.5"
+          stroke="#ce1120"
+          strokeWidth={1}
+          fill="none"
+        />
+        
+        {/* Bentuk Kepala Oval/Berlian */}
+        <path
+          d="M -1 -2.5 C 2 -3, 4 -2, 4 0 C 4 2, 2 3, -1 2.5 C -2.5 2, -2.5 -2, -1 -2.5 Z"
+          fill={style.fill}
+          stroke="#2c2e2c"
+          strokeWidth={0.5}
+        />
+
+        {/* Mata */}
+        <circle cx={1.5} cy={-1.2} r={0.6} fill="#000000" />
+        <circle cx={1.5} cy={1.2} r={0.6} fill="#000000" />
+      </g>
+    </g>
+  );
 };
 
 interface LadderProps {

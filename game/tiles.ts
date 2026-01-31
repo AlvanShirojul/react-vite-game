@@ -23,7 +23,7 @@ export const TILE_COLORS: Record<TileType, string> = {
 // =======================
 // 3️⃣ POSISI KHUSUS
 // =======================
-const SNAKE_HEADS = [17, 12, 54, 62, 99, 95, 64];
+const SNAKE_HEADS = [16, 12, 54,43, 99, 95, 64];
 const LADDER_STARTS = [4, 10, 71, 21, 36, 55, 79, 51];
 
 const RESERVED = new Set<number>([
@@ -73,15 +73,11 @@ function generateBoardTiles(): Record<number, TileType> {
 export const BOARD_TILES: Record<number, TileType> = generateBoardTiles();
 
 export const TILE_IMAGES: Record<number, string> = {
-  4 : '/images/Buku.png',   // Kotak 10 akan selalu punya gambar buku
-  9 : '/images/Lampu.png',  // Kotak 25 akan selalu punya gambar lampu
-  51: '/images/Tangan.png',
+  3 : '/images/Buku.png',   // Kotak 10 akan selalu punya gambar buku
+  // 9 : '/images/Lampu.png',  // Kotak 25 akan selalu punya gambar lampu
+  // 51: '/images/Tangan.png',
   1 : '/images/Start.png',
   100 :'/images/Finish.png',
-  76 : '/images/Never.png',
-  45: '/images/Tengkorak.png',
-  // 89: '/images/Bingkai1.png',
-  // 88: '/images/Bingkai2.png',
-  // 72: '/images/Bingkai3.png',
-  // 73: '/images/Bingkai4.png' // Tambahkan nomor kotak dan path gambarnya di sini
+  76 : '/images/Tas.png',
+  // 45: '/images/Tengkorak.png'
 };

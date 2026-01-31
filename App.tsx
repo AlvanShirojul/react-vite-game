@@ -6,8 +6,8 @@ import QuestionModal from './components/QuestionModal';
 import ChallengeModal from './components/ChallengeModal';
 import { CHALLENGES, getRandomChallenge } from './challenge';
 import { avatars } from './components/avatars';
+import { QUESTIONS, getRandomQuestions} from './questions';
 import { SNAKES_AND_LADDERS, PLAYER_COLORS } from './constants';
-import { QUESTIONS } from './questions';
 import { playSound, initSounds } from './sounds';
 import type { GameStatus, Player, Avatar as AvatarType, Question } from './types';
 import { applyTileRule, type TileEventResult } from './game/rules';
@@ -28,8 +28,11 @@ export default function App() {
     const [isAvatarPickerOpen, setIsAvatarPickerOpen] = useState(false);
     const [editingPlayerIndex, setEditingPlayerIndex] = useState<number | null>(null);
     const [setupPlayers, setSetupPlayers] = useState<Partial<Player>[]>([]);
-
-    const [questionState, setQuestionState] = useState<{ question: Question | null, isVisible: boolean }>({ question: null, isVisible: false });
+   
+    const [questionsState, setQuestionState] = useState<{ isVisible: boolean; question: any }>({ 
+        isVisible: false, 
+        question: null 
+    });
     const [pendingInteraction, setPendingInteraction] = useState<{ type: 'question' | 'challenge', playerIndex: number } | null>(null);
     const [hasBonusTurn, setHasBonusTurn] = useState<boolean>(false);
     const [challengeState, setChallengeState] = useState({ isVisible: false, message: '' });
@@ -94,7 +97,6 @@ export default function App() {
     };
 
     const handleChallengeComplete = (success: boolean) => {
-        setChallengeState(prev => ({ ...prev, isVisible: false }));
         if (pendingInteraction) {
             handleInteractionResult(success, pendingInteraction.playerIndex);
         }
@@ -138,27 +140,27 @@ export default function App() {
 const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex: number) => {
     const player = players[playerIndex];
 
-    setQuestionState({ question: null, isVisible: false });
+    // Reset status modal
+    setQuestionState({ isVisible: false, message: '' });
     setChallengeState({ isVisible: false, message: '' });
     setPendingInteraction(null);
 
     if (wasSuccessful) {
         playSound('correct');
-        // Player 1 dapat bonus bermain 1 kali lagi
+        // Mendapatkan bonus giliran 1 kali lagi
         setHasBonusTurn(true); 
         setGameMessage(`Berhasil! ${player.name} dapat giliran tambahan!`);
-        setIsMoving(false); // Memungkinkan tombol kocok dadu aktif kembali
+        setIsMoving(false); 
     } else {
         playSound('incorrect');
-        // Gagal: Mundur 2 langkah
-        const penalty = 2;
-        setGameMessage(`Salah! ${player.name} mundur ${penalty} langkah.`);
+        // GAGAL: Mundur 1 langkah sesuai permintaan
+        const penalty = 1; 
+        setGameMessage(`Gagal! ${player.name} mundur ${penalty} langkah.`);
         
         setPlayers(prev => prev.map((p, idx) => 
             idx === playerIndex ? { ...p, position: Math.max(1, p.position - penalty) } : p
         ));
 
-        // Setelah mundur, matikan bonus (jika ada) dan ganti giliran
         setTimeout(() => {
             setHasBonusTurn(false);
             const nextIdx = (playerIndex + 1) % players.length;
@@ -168,7 +170,8 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
             setIsRolling(false);
         }, 800);
     }
-}, [players]);   const handleQuestionAnswer = (wasCorrect: boolean) => {
+}, [players, playSound]);   
+    const handleQuestionAnswer = (wasCorrect: boolean) => {
         if (pendingInteraction) {
             handleInteractionResult(wasCorrect, pendingInteraction.playerIndex);
         }
@@ -275,54 +278,54 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
     }, [players, currentPlayerIndex, isMoving, isRolling]);
 
     const processTileRules = useCallback((position: number, playerIndex: number) => {
-    const player = players[playerIndex];
-    const tileType = BOARD_TILES[position];
-    const ruleResult = applyTileRule(tileType, player);
+        const player = players[playerIndex];
+        const tileType = BOARD_TILES[position];
+        const ruleResult = applyTileRule(tileType, player);
 
-    // LOGIKA KUNCI: Jika sudah ada interaksi atau sedang bonus turn, abaikan interaksi baru
-    if (interactionUsedThisTurn === playerIndex) {
-        endTurn(playerIndex);
-        return;
-    }
+        // LOGIKA KUNCI: Jika sudah ada interaksi atau sedang bonus turn, abaikan interaksi baru
+        if (interactionUsedThisTurn === playerIndex) {
+            endTurn(playerIndex);
+            return;
+        }
 
-    // A. Kotak Hijau (Maju 1 Langkah)
-    if (tileType === TileType.GREEN) {
-        setInteractionUsedThisTurn(playerIndex); // Kunci interaksi
-        const newPos = Math.min(position + 1, 100);
-        setGameMessage(`${player.name} mendarat di Hijau! Maju 1 langkah.`);
-        
-        setTimeout(() => {
-            setPlayers(prev => prev.map((p, i) => i === playerIndex ? { ...p, position: newPos } : p));
-            // Setelah maju, langsung akhiri giliran karena interaksi sudah terpakai
-            setTimeout(() => endTurn(playerIndex), 500);
-        }, 500);
-        return;
-    }
+        // A. Kotak Hijau (Maju 1 Langkah)
+        if (tileType === TileType.GREEN) {
+            setInteractionUsedThisTurn(playerIndex); // Kunci interaksi
+            const newPos = Math.min(position + 1, 100);
+            setGameMessage(`${player.name} mendarat di Hijau! Maju 1 langkah.`);
+            
+            setTimeout(() => {
+                setPlayers(prev => prev.map((p, i) => i === playerIndex ? { ...p, position: newPos } : p));
+                // Setelah maju, langsung akhiri giliran karena interaksi sudah terpakai
+                setTimeout(() => endTurn(playerIndex), 500);
+            }, 500);
+            return;
+        }
 
-    // B. Kotak Pertanyaan atau Tantangan
-   if (ruleResult.interaction) {
-    setInteractionUsedThisTurn(playerIndex); // Kunci agar tidak ada interaksi ganda
-    setPendingInteraction({ type: ruleResult.interaction.type, playerIndex });
+        // B. Kotak Pertanyaan atau Tantangan
+    if (ruleResult.interaction) {
+            setInteractionUsedThisTurn(playerIndex);
+            setPendingInteraction({ type: ruleResult.interaction.type, playerIndex });
 
-    if (ruleResult.interaction.type === 'question') {
-        // Ambil pertanyaan acak
-        const randomIndex = Math.floor(Math.random() * QUESTIONS.length);
-        setQuestionState({ 
-            question: QUESTIONS[randomIndex], 
-            isVisible: true 
-        });
-    } else if (ruleResult.interaction.type === 'challenge') {
-        const randomChallenge = getRandomChallenge();
-        setChallengeState({ 
-            isVisible: true, 
-            message: randomChallenge.Challenge // Mengakses .Challenge (kapital)
-        });
-        setPendingInteraction({ type: 'challenge', playerIndex });
-        return;
-    }
-    return; // Berhenti agar tidak memanggil endTurn() sebelum interaksi selesai
-}
-
+            if (ruleResult.interaction.type === 'question') {
+                // PERBAIKAN DI SINI:
+                const randomQuestion = getRandomQuestions(); 
+                setQuestionState({
+                    isVisible: true,
+                    message: randomQuestion.question// Mengambil objek utuh, bukan fungsi
+                });
+                return; // Berhenti agar tidak endTurn otomatis
+            } 
+            
+            if (ruleResult.interaction.type === 'challenge') {
+                const randomChallenge = getRandomChallenge();
+                setChallengeState({ 
+                    isVisible: true, 
+                    message: randomChallenge.Challenge 
+                });
+                return;
+            }
+        }
     // C. Kotak Biasa
     endTurn(playerIndex);
     }, [players, interactionUsedThisTurn, endTurn, BOARD_TILES]);
@@ -492,9 +495,9 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
             </footer>
 
            <QuestionModal
-            isOpen={questionState.isVisible}
-            question={questionState.question}
-            onAnswer={handleQuestionAnswer}
+                isOpen={questionsState.isVisible}
+                message={questionsState.message}
+                onComplete={handleQuestionAnswer}
             />
             <ChallengeModal
                 isOpen={challengeState.isVisible}
