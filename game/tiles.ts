@@ -79,5 +79,5 @@ export const TILE_IMAGES: Record<number, string> = {
   1 : '/images/Start.png',
   100 :'/images/Finish.png',
   76 : '/images/Tas.png',
-  // 45: '/images/Tengkorak.png'
+  45: '/images/Buku_1.png'
 };
