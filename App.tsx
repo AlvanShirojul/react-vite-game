@@ -355,7 +355,7 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
             <div className="min-h-screen text-[#1E459F] flex flex-col items-center justify-center p-4">
                 <header className="text-center mb-8">
                     <h1 className="text-4xl md:text-6xl text-[#1E459F] font-display">Ular Tangga</h1>
-                    <h2 className="text-xl md:text-2xl text-[#CF2A2A] font-display">Snakes & Ladders</h2>
+                    <h2 className="text-xl md:text-2xl text-[#CF2A2A] font-display">Psikologi</h2>
                 </header>
                 <div className="bg-[#FAF8F1]/70 backdrop-blur-sm p-8 rounded-lg shadow-lg border border-[#FABD32] w-full max-w-2xl">
                     <h3 className="text-3xl font-bold text-center text-[#1E459F] font-display mb-6">Game Setup</h3>
@@ -411,7 +411,7 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
                     >
                         Start Game
                     </button>
-                    {!isGameSetupValid && <p className="text-center text-sm text-red-600 mt-2">Please enter a name and select a unique avatar for each player.</p>}
+                    {!isGameSetupValid && <p className="text-center text-sm text-red-600 mt-2">Anda bisa mengganti nama player dan avatar yang tersedia</p>}
                 </div>
                 <AvatarPicker 
                     isOpen={isAvatarPickerOpen}
@@ -427,7 +427,7 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
         <div className="min-h-screen text-[#1E459F] flex flex-col items-center justify-center p-4">
             <header className="text-center mb-4">
                 <h1 className="text-4xl md:text-6xl text-[#1E459F] font-display">Ular Tangga</h1>
-                <h2 className="text-xl md:text-2xl text-[#CF2A2A] font-display">Snakes & Ladders</h2>
+                <h2 className="text-xl md:text-2xl text-[#CF2A2A] font-display">Psikologi</h2>
             </header>
 
             <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8">
@@ -491,7 +491,7 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
                 </aside>
             </div>
              <footer className="text-center mt-8 text-[#1E459F]/60">
-                <p>Built by a world-class senior frontend React engineer.</p>
+                <p>Bimbingan Konseling UNUGIRI</p>
             </footer>
 
            <QuestionModal
