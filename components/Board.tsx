@@ -260,14 +260,17 @@ const Board = ({ players }: BoardProps) => {
                     className="w-full h-full flex flex-col justify-between items-center p-1 relative overflow-hidden"
                 >
                     {/* 1. Angka Kotak (Posisi di pojok kanan atas) */}
-                    <div className="w-full flex justify-end">
-                        <span className={`text-[10px] font-bold ${textColor}`}>{num}</span>
+                    <div className="relative z-10 w-full flex justify-end">
+                        <span
+                            className={`text-[10px] font-bold ${textColor}`}
+                        >
+                            {num}
+                        </span>
                     </div>
-
                     {/* 2. GAMBAR: Render jika ada datanya di TILE_IMAGES */}
                     {tileImageUrl && (
-                        <div className="absolute inset-0 flex items-center justify-center ">
-                            <img 
+                        <div className="absolute inset-0 z-0 flex items-center justify-center">                            
+                        <img 
                                 src={tileImageUrl} 
                                 alt="" 
                                 className="w-full h-full object-contain opacity-100 pointer-events-none" 

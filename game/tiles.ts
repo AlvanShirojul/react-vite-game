@@ -75,9 +75,17 @@ export const BOARD_TILES: Record<number, TileType> = generateBoardTiles();
 export const TILE_IMAGES: Record<number, string> = {
   3 : '/images/Buku.png',   // Kotak 10 akan selalu punya gambar buku
   // 9 : '/images/Lampu.png',  // Kotak 25 akan selalu punya gambar lampu
-  // 51: '/images/Tangan.png',
   1 : '/images/Start.png',
   100 :'/images/Finish.png',
   76 : '/images/Tas.png',
-  45: '/images/Buku_1.png'
+  45 : '/images/Buku_1.png',
+  89 : '/images/Bingkai2.png',
+  73 : '/images/Bingkai3.png',
+  88 : '/images/Bingkai1.png',
+  72 : '/images/Bingkai4.png',
+  27 : '/images/1.png',
+  28 : '/images/2.png',
+  14 : '/images/3.png',
+  13 : '/images/4.png'
+
 };
