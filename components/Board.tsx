@@ -348,8 +348,8 @@ const Board = ({ players, onTileClick, debugMode, onDebugMove }: BoardProps) => 
 
             {showConfirm && selectedPlayerId !== null && pendingTarget !== null && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    <div className="bg-black/50 absolute inset-0" onClick={() => { setShowConfirm(false); setPendingTarget(null); }} />
-                    <div className="bg-white p-6 rounded-lg shadow-2xl z-60 w-full max-w-sm text-center border-2">
+                    <div className="bg-black/50 absolute inset-0 z-40" onClick={() => { setShowConfirm(false); setPendingTarget(null); }} />
+                    <div className="bg-white p-6 rounded-lg shadow-2xl z-50 w-full max-w-sm text-center border-2">
                         <h3 className="text-xl font-bold mb-2">Konfirmasi Pindah Player</h3>
                         <p className="mb-4">Pindahkan player #{selectedPlayerId} ke kotak <strong>{pendingTarget}</strong>?</p>
                         <div className="flex gap-3 justify-center">
