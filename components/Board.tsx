@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { SNAKES_AND_LADDERS } from '../constants';
 import type { Player } from '../types';
 import { TILE_COLORS, TileType } from '../game/tiles';
@@ -9,6 +9,8 @@ import { TILE_IMAGES } from '../game/tiles'; // Pastikan TILE_IMAGES diimpor
 interface BoardProps {
     players: Player[];
     onTileClick?: (position: number) => void;
+    debugMode?: boolean;
+    onDebugMove?: (playerId: number, newPosition: number) => void;
 }
 
 const BOARD_DIMENSION = 10;
@@ -53,7 +55,8 @@ interface GamePieceProps {
 }
 
 // FIX: Changed component definition to use React.FC to correctly type props and handle the 'key' prop.
-const GamePiece: React.FC<GamePieceProps> = ({ player, offsetStyle }) => {
+const GamePiece: React.FC<GamePieceProps & { onSelect?: (playerId:number) => void; isSelected?: boolean }>
+    = ({ player, offsetStyle, onSelect, isSelected }) => {
     const { x, y } = getSquareCoords(player.position);
     
     const containerStyle = {
@@ -65,9 +68,10 @@ const GamePiece: React.FC<GamePieceProps> = ({ player, offsetStyle }) => {
     const Avatar = player.avatar;
     return (
         <div className={`absolute w-[10%] h-[10%] p-1`} style={containerStyle}>
-            <div 
-                className={`w-full h-full rounded-full shadow-lg flex items-center justify-center text-white border-2 border-white transition-transform duration-300`} 
-                style={{ backgroundColor: player.color, ...offsetStyle }}
+            <div
+                onClick={(e) => { e.stopPropagation(); onSelect?.(player.id); }}
+                className={`w-full h-full rounded-full shadow-lg flex items-center justify-center text-white border-2 transition-transform duration-300 ${isSelected ? 'ring-4 ring-white/60 scale-110' : ''}`}
+                style={{ backgroundColor: player.color, cursor: onSelect ? 'pointer' : 'default', ...offsetStyle }}
             >
                 <Avatar className="w-full h-full p-1" />
             </div>
@@ -225,9 +229,12 @@ const Ladder: React.FC<LadderProps> = ({ from, to, style }) => {
     );
 };
 
-const Board = ({ players, onTileClick }: BoardProps) => {
+const Board = ({ players, onTileClick, debugMode, onDebugMove }: BoardProps) => {
     let snakeIndex = 0;
     let ladderIndex = 0;
+    const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null);
+    const [pendingTarget, setPendingTarget] = useState<number | null>(null);
+    const [showConfirm, setShowConfirm] = useState(false);
     
     const playerPositions: { [key: number]: Player[] } = {};
     players.forEach(player => {
@@ -261,7 +268,14 @@ const Board = ({ players, onTileClick }: BoardProps) => {
                     key={num}
                     style={{ backgroundColor: finalBgColor }}
                     className="w-full h-full flex flex-col justify-between items-center p-1 relative overflow-hidden"
-                    onClick={() => onTileClick?.(num)}
+                    onClick={() => {
+                        if (debugMode && selectedPlayerId !== null) {
+                            setPendingTarget(num);
+                            setShowConfirm(true);
+                        } else {
+                            onTileClick?.(num);
+                        }
+                    }}
                 >
                     {/* 1. Angka Kotak (Posisi di pojok kanan atas) */}
                     <div className="relative z-10 w-full flex justify-end">
@@ -329,8 +343,27 @@ const Board = ({ players, onTileClick }: BoardProps) => {
                     };
                 }
 
-                return <GamePiece key={player.id} player={player} offsetStyle={offsetStyle} />;
+                return <GamePiece key={player.id} player={player} offsetStyle={offsetStyle} onSelect={debugMode ? (id) => setSelectedPlayerId(id) : undefined} isSelected={selectedPlayerId === player.id} />;
             })}
+
+            {showConfirm && selectedPlayerId !== null && pendingTarget !== null && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="bg-black/50 absolute inset-0" onClick={() => { setShowConfirm(false); setPendingTarget(null); }} />
+                    <div className="bg-white p-6 rounded-lg shadow-2xl z-60 w-full max-w-sm text-center border-2">
+                        <h3 className="text-xl font-bold mb-2">Konfirmasi Pindah Player</h3>
+                        <p className="mb-4">Pindahkan player #{selectedPlayerId} ke kotak <strong>{pendingTarget}</strong>?</p>
+                        <div className="flex gap-3 justify-center">
+                            <button className="px-4 py-2 bg-green-500 text-white rounded" onClick={() => {
+                                onDebugMove?.(selectedPlayerId, pendingTarget);
+                                setShowConfirm(false);
+                                setPendingTarget(null);
+                                setSelectedPlayerId(null);
+                            }}>Konfirmasi</button>
+                            <button className="px-4 py-2 bg-gray-200 rounded" onClick={() => { setShowConfirm(false); setPendingTarget(null); }}>Batal</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

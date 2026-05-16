@@ -140,9 +140,16 @@ export default function App() {
     };
     const handleTileClick = (position: number) => {
         if (isDebugMode) {
-            setPlayers(prev => prev.map((p, i) => i === currentPlayerIndex ? { ...p, position } : p));
-            setGameMessage(`${players[currentPlayerIndex].name} dipindahkan ke posisi ${position}`);
+            // In debug mode Board handles selection/move flow; ignore direct tile clicks here
+            return;
         }
+        // Normal behavior on tile click can be added here if desired
+        setGameMessage(`Kotak ${position}`);
+    };
+
+    const handleDebugMove = (playerId: number, newPosition: number) => {
+        setPlayers(prev => prev.map(p => p.id === playerId ? { ...p, position: newPosition, stepsToMove: 0 } : p));
+        setGameMessage(`Player dipindahkan ke posisi ${newPosition}`);
     };
     const endTurnAfterFailure = useCallback((playerIndex: number, penaltySteps: number) => {
         setPlayers(prevPlayers => 
@@ -498,7 +505,7 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
 
                     {/* Board */}
                     <div className="aspect-square w-full max-w-2xl mx-auto shadow-2xl rounded-lg overflow-hidden border-4 border-[#1E459F] bg-[#FAF8F1]">
-                       <Board players={players} onTileClick={handleTileClick} />
+                       <Board players={players} onTileClick={handleTileClick} debugMode={isDebugMode} onDebugMove={handleDebugMove} />
                     </div>
                 </main>
 
@@ -513,10 +520,13 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
                             const Avatar = player.avatar;
                             const isCurrent = index === currentPlayerIndex;
                             return (
-                                <div key={player.id} className={`flex items-center gap-4 p-2 rounded-lg border-2 transition-all ${isCurrent && gameStatus === 'IN_PROGRESS' ? 'shadow-lg scale-105' : ''}`} style={{ borderColor: player.color, backgroundColor: isCurrent ? '#E1DCCA' : 'transparent' }}>
-                                    <Avatar className="h-8 w-8" style={{ color: player.color }} />
-                                    <span className="font-bold flex-1" style={{ color: player.color }}>{player.name}</span>
-                                    <span className="text-2xl font-bold font-mono bg-white px-3 py-1 rounded">{player.position}</span>
+                                <div key={player.id} className={`flex items-center gap-4 p-3 rounded-lg border-2 transition-all ${isCurrent && gameStatus === 'IN_PROGRESS' ? 'shadow-lg scale-105' : ''}`} style={{ borderColor: player.color, backgroundColor: isCurrent ? player.color : 'transparent' }}>
+                                    <Avatar className="h-8 w-8" style={{ color: isCurrent ? 'white' : player.color }} />
+                                    <span className="font-bold flex-1" style={{ color: isCurrent ? 'white' : player.color }}>{player.name}</span>
+                                    <div className="flex flex-col items-end gap-1">
+                                        <span className="text-xs font-semibold" style={{ color: isCurrent ? 'white' : player.color }}>Posisi</span>
+                                        <span className="text-2xl font-bold font-mono bg-white px-3 py-1 rounded" style={{ color: player.color }}>{player.position}</span>
+                                    </div>
                                 </div>
                             );
                         })}
