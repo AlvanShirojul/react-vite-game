@@ -465,7 +465,38 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
             </header>
 
             <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8">
-                <main className="w-full lg:w-2/3">
+                <main className="w-full lg:w-2/3 flex gap-4">
+                    {/* Rules Panel */}
+                    <div className="hidden lg:flex flex-col justify-center gap-3 p-4 bg-[#FAF8F1]/70 backdrop-blur-sm rounded-lg shadow-lg border-2 border-[#1E459F]">
+                        <h3 className="text-lg font-bold text-[#1E459F] text-center whitespace-nowrap">Rules</h3>
+                        
+                        <div className="flex items-center gap-3 text-sm">
+                            <div className="w-8 h-8 bg-blue-500 rounded-md flex-shrink-0 shadow-md"></div>
+                            <span className="font-medium text-[#1E459F]">Pertanyaan</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-3 text-sm">
+                            <div className="w-8 h-8 bg-yellow-400 rounded-md flex-shrink-0 shadow-md"></div>
+                            <span className="font-medium text-[#1E459F]">Tantangan</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-3 text-sm">
+                            <div className="w-8 h-8 bg-white rounded-md flex-shrink-0 shadow-md border-2 border-gray-300"></div>
+                            <span className="font-medium text-[#1E459F]">Tangga</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-3 text-sm">
+                            <div className="w-8 h-8 bg-red-500 rounded-md flex-shrink-0 shadow-md"></div>
+                            <span className="font-medium text-[#1E459F]">Ular</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-3 text-sm">
+                            <div className="w-8 h-8 bg-green-500 rounded-md flex-shrink-0 shadow-md"></div>
+                            <span className="font-medium text-[#1E459F]">Skip 1×</span>
+                        </div>
+                    </div>
+
+                    {/* Board */}
                     <div className="aspect-square w-full max-w-2xl mx-auto shadow-2xl rounded-lg overflow-hidden border-4 border-[#1E459F] bg-[#FAF8F1]">
                        <Board players={players} onTileClick={handleTileClick} />
                     </div>
