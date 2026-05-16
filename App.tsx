@@ -39,6 +39,8 @@ export default function App() {
     const [greenModal, setGreenModal] = useState(false);
     const [interactionUsedThisTurn, setInteractionUsedThisTurn] = useState<number | null>(null);
     const [isDebugMode, setIsDebugMode] = useState(false);
+    const [debugEditingPlayer, setDebugEditingPlayer] = useState<number | null>(null);
+    const [debugSelectedPosition, setDebugSelectedPosition] = useState<number | null>(null);
 
     const [soundsInitialized, setSoundsInitialized] = useState(false);
     const [showRestartConfirm, setShowRestartConfirm] = useState(false);
@@ -139,17 +141,18 @@ export default function App() {
         setTimeout(() => endTurn(currentPlayerIndex), 500);
     };
     const handleTileClick = (position: number) => {
-        if (isDebugMode) {
-            // In debug mode Board handles selection/move flow; ignore direct tile clicks here
+        // Debug: if editing a player, select the tile as the new position
+        if (isDebugMode && debugEditingPlayer !== null) {
+            setDebugSelectedPosition(position);
+            setGameMessage(`${players[debugEditingPlayer].name} akan dipindahkan ke posisi ${position}. Klik konfirmasi untuk menyimpan.`);
             return;
         }
-        // Normal behavior on tile click can be added here if desired
-        setGameMessage(`Kotak ${position}`);
-    };
 
-    const handleDebugMove = (playerId: number, newPosition: number) => {
-        setPlayers(prev => prev.map(p => p.id === playerId ? { ...p, position: newPosition, stepsToMove: 0 } : p));
-        setGameMessage(`Player dipindahkan ke posisi ${newPosition}`);
+        // Non-debug quick move for current player (legacy/dev)
+        if (isDebugMode) {
+            // when debug on but not editing, ignore tile clicks
+            return;
+        }
     };
     const endTurnAfterFailure = useCallback((playerIndex: number, penaltySteps: number) => {
         setPlayers(prevPlayers => 
@@ -505,7 +508,7 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
 
                     {/* Board */}
                     <div className="aspect-square w-full max-w-2xl mx-auto shadow-2xl rounded-lg overflow-hidden border-4 border-[#1E459F] bg-[#FAF8F1]">
-                       <Board players={players} onTileClick={handleTileClick} debugMode={isDebugMode} onDebugMove={handleDebugMove} />
+                       <Board players={players} onTileClick={handleTileClick} debugSelectedPosition={debugSelectedPosition} />
                     </div>
                 </main>
 
@@ -519,18 +522,61 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
                         {players.map((player, index) => {
                             const Avatar = player.avatar;
                             const isCurrent = index === currentPlayerIndex;
+                            const isEditing = isDebugMode && debugEditingPlayer === index;
                             return (
-                                <div key={player.id} className={`flex items-center gap-4 p-3 rounded-lg border-2 transition-all ${isCurrent && gameStatus === 'IN_PROGRESS' ? 'shadow-lg scale-105' : ''}`} style={{ borderColor: player.color, backgroundColor: isCurrent ? player.color : 'transparent' }}>
-                                    <Avatar className="h-8 w-8" style={{ color: isCurrent ? 'white' : player.color }} />
-                                    <span className="font-bold flex-1" style={{ color: isCurrent ? 'white' : player.color }}>{player.name}</span>
+                                <div
+                                    key={player.id}
+                                    onClick={() => {
+                                        if (isDebugMode) {
+                                            setDebugSelectedPosition(null);
+                                            setDebugEditingPlayer(prev => prev === index ? null : index);
+                                            setGameMessage(`${player.name} dipilih untuk debug`);
+                                        }
+                                    }}
+                                    className={`flex items-center gap-4 p-3 rounded-lg border-2 transition-all ${isCurrent && gameStatus === 'IN_PROGRESS' ? 'shadow-lg scale-105' : ''} ${isDebugMode ? 'cursor-pointer hover:opacity-95' : ''}`}
+                                    style={{ borderColor: isEditing ? '#ffffff' : player.color, backgroundColor: isEditing ? player.color : (isCurrent ? player.color : 'transparent') }}
+                                >
+                                    <Avatar className="h-8 w-8" style={{ color: isEditing ? 'white' : player.color }} />
+                                    <span className="font-bold flex-1" style={{ color: isEditing ? 'white' : player.color }}>{player.name}</span>
                                     <div className="flex flex-col items-end gap-1">
-                                        <span className="text-xs font-semibold" style={{ color: isCurrent ? 'white' : player.color }}>Posisi</span>
+                                        <span className="text-xs font-semibold" style={{ color: isEditing ? 'white' : player.color }}>Posisi</span>
                                         <span className="text-2xl font-bold font-mono bg-white px-3 py-1 rounded" style={{ color: player.color }}>{player.position}</span>
                                     </div>
                                 </div>
                             );
                         })}
                     </div>
+
+                    {/* Debug confirm area */}
+                    {isDebugMode && debugEditingPlayer !== null && (
+                        <div className="w-full mt-3 p-3 bg-white rounded-lg border-2 border-dashed">
+                            <p className="text-sm text-[#1E459F] mb-2">Memilih: <strong>{players[debugEditingPlayer].name}</strong></p>
+                            <p className="text-sm text-[#1E459F] mb-3">Posisi terpilih: <strong>{debugSelectedPosition ?? '-'}</strong></p>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => {
+                                        if (debugSelectedPosition !== null) {
+                                            const idx = debugEditingPlayer;
+                                            setPlayers(prev => prev.map((p, i) => i === idx ? { ...p, position: debugSelectedPosition } : p));
+                                            setGameMessage(`${players[idx].name} berhasil dipindahkan ke posisi ${debugSelectedPosition}`);
+                                            setDebugEditingPlayer(null);
+                                            setDebugSelectedPosition(null);
+                                        }
+                                    }}
+                                    disabled={debugSelectedPosition === null}
+                                    className="flex-1 bg-green-500 text-white py-2 rounded-lg disabled:opacity-50"
+                                >
+                                    Konfirmasi
+                                </button>
+                                <button
+                                    onClick={() => { setDebugEditingPlayer(null); setDebugSelectedPosition(null); setGameMessage('Debug edit dibatalkan.'); }}
+                                    className="flex-1 bg-gray-200 text-gray-800 py-2 rounded-lg"
+                                >
+                                    Batal
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="w-full flex flex-col items-center gap-4">
                         <Dice value={diceValue} isRolling={isRolling} />
