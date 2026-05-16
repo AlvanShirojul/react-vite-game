@@ -161,7 +161,7 @@ const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 180;
       />
 
       {/* Bagian Kepala (Gunakan sudut dinamis) */}
-      <g transform={`translate(${startX}, ${startY}) rotate(${angle}) scale(0.8)`}>
+    <g transform={`translate(${startX}, ${startY}) rotate(${angle}) scale(0.8)`}>
         {/* Lidah Bercabang */}
         <path
           d="M 2 0 L 5 0 M 5 0 L 7 -1.5 M 5 0 L 7 1.5"
@@ -182,6 +182,9 @@ const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 180;
         <circle cx={1.5} cy={-1.2} r={0.6} fill="#000000" />
         <circle cx={1.5} cy={1.2} r={0.6} fill="#000000" />
       </g>
+            {/* Pastikan kepala dan ekor berada di tengah kotak: tambahkan titik pusat pada start dan end */}
+            <circle cx={startX} cy={startY} r={1.6} fill={style.fill} stroke={style.stroke} strokeWidth={0.4} />
+            <circle cx={endX} cy={endY} r={1.6} fill={style.fill} stroke={style.stroke} strokeWidth={0.4} />
     </g>
   );
 };
