@@ -47,6 +47,7 @@ export default function App() {
 
     const [soundsInitialized, setSoundsInitialized] = useState(false);
     const [showRestartConfirm, setShowRestartConfirm] = useState(false);
+    const [showWinnerModal, setShowWinnerModal] = useState(false);
     
     const playClickSound = () => playSound('click');
 
@@ -326,6 +327,10 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
 
         return () => clearTimeout(moveTimeout);
     }, [players, currentPlayerIndex]);
+
+    useEffect(() => {
+        if (winner) setShowWinnerModal(true);
+    }, [winner]);
 
     useEffect(() => {
         const currentPlayer = players[currentPlayerIndex];
@@ -702,6 +707,22 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
                             </div>
                         </div>
                     )}
+            {/* Winner Modal */}
+            {winner && showWinnerModal && (
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[170] backdrop-blur-sm">
+                    <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full text-center border-4 border-[#FABD32]">
+                        <div className="mx-auto mb-4" style={{ width: 96, height: 96 }}>
+                            {winner.avatar ? <winner.avatar className="w-full h-full" /> : null}
+                        </div>
+                        <h2 className="text-3xl font-black text-[#1E459F] mb-2">Selamat!</h2>
+                        <p className="text-lg mb-6 font-semibold">{winner.name} telah mencapai finish dan memenangkan permainan.</p>
+                        <div className="flex gap-4">
+                            <button onClick={() => { setShowWinnerModal(false); confirmReset(); }} className="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold">Play Again</button>
+                            <button onClick={() => setShowWinnerModal(false)} className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-xl font-bold">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
