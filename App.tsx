@@ -170,8 +170,9 @@ export default function App() {
             return;
         }
 
-        // Normal behaviour (non-debug): pindahkan player saat ini (untuk testing cepat)
-        setPlayers(prev => prev.map((p, i) => i === currentPlayerIndex ? { ...p, position } : p));
+        // Saat debug OFF: jangan izinkan pemindahan manual via klik kotak.
+        setGameMessage('Klik kotak dinonaktifkan. Gunakan tombol lempar dadu untuk bergerak.');
+        return;
     };
 
     const handlePlayerTokenClick = (playerId: number | string) => {
