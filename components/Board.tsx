@@ -62,7 +62,7 @@ const GamePiece: React.FC<GamePieceProps & { onTokenClick?: (id: number | string
         left: `${x * 10 + 5}%`, // center of the cell (each cell = 10%)
         top: `${y * 10 + 5}%`,
         transform: 'translate(-50%, -50%)', // center token on the point
-        transition: 'transform 0.3s ease-in-out',
+        transition: 'left 0.28s ease-in-out, top 0.28s ease-in-out, transform 0.28s ease-in-out',
         zIndex: player.position,
         position: 'absolute' as const,
     };
