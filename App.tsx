@@ -635,6 +635,17 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
                 <p>Bimbingan Konseling UNUGIRI</p>
             </footer>
 
+            {/* Debug status panel (visible to help diagnose disabled dice) */}
+            <div className="fixed left-4 bottom-4 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-lg p-3 text-sm shadow-lg z-50">
+                <div className="font-medium text-sm text-[#1E459F] mb-1">Debug</div>
+                <div className="flex gap-2">
+                    <div className="px-2 py-1 rounded" style={{ background: isRolling ? '#fde68a' : '#f3f4f6' }}>isRolling: {isRolling ? 'true' : 'false'}</div>
+                    <div className="px-2 py-1 rounded" style={{ background: isMoving ? '#fde68a' : '#f3f4f6' }}>isMoving: {isMoving ? 'true' : 'false'}</div>
+                </div>
+                <div className="mt-2 text-xs text-gray-700">status: {gameStatus}</div>
+                <div className="text-xs text-gray-700">winner: {winner ? winner.name : '—'}</div>
+            </div>
+
            <QuestionModal
                 isOpen={questionsState.isVisible}
                 message={questionsState.message}
