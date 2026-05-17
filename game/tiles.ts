@@ -26,9 +26,13 @@ export const TILE_COLORS: Record<TileType, string> = {
 const SNAKE_HEADS = [16, 12, 54,43, 99, 95, 64];
 const LADDER_STARTS = [4, 10, 71, 21, 36, 55, 79, 51];
 
+// Tiles that must keep a specific type (not randomized)
+const MUST_BE_YELLOW = [24, 25, 26];
+
 const RESERVED = new Set<number>([
   ...SNAKE_HEADS,
   ...LADDER_STARTS,
+  ...MUST_BE_YELLOW,
 ]);
 
 // =======================
@@ -40,6 +44,9 @@ function generateBoardTiles(): Record<number, TileType> {
   // snake & ladder
   SNAKE_HEADS.forEach(n => { result[n] = TileType.SNAKE_HEAD; });
   LADDER_STARTS.forEach(n => { result[n] = TileType.LADDER_START; });
+
+  // Ensure specific tiles are always yellow
+  MUST_BE_YELLOW.forEach(n => { result[n] = TileType.YELLOW; });
 
   const candidates = Array.from({ length: 100 }, (_, i) => i + 1)
     .filter(n => !RESERVED.has(n));
