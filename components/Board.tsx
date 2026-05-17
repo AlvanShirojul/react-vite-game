@@ -9,7 +9,7 @@ import { TILE_IMAGES } from '../game/tiles'; // Pastikan TILE_IMAGES diimpor
 interface BoardProps {
     players: Player[];
     onTileClick?: (position: number) => void;
-    debugSelectedPosition?: number | null;
+    highlightedTile?: number;
 }
 
 const BOARD_DIMENSION = 10;
@@ -226,10 +226,10 @@ const Ladder: React.FC<LadderProps> = ({ from, to, style }) => {
     );
 };
 
-const Board = ({ players, onTileClick, debugSelectedPosition }: BoardProps) => {
+const Board = ({ players, onTileClick, highlightedTile }: BoardProps) => {
     let snakeIndex = 0;
     let ladderIndex = 0;
-    
+
     const playerPositions: { [key: number]: Player[] } = {};
     players.forEach(player => {
         if (!playerPositions[player.position]) {
@@ -237,7 +237,6 @@ const Board = ({ players, onTileClick, debugSelectedPosition }: BoardProps) => {
         }
         playerPositions[player.position].push(player);
     });
-    
 
     let normalIndex = 0;
 
@@ -261,7 +260,7 @@ const Board = ({ players, onTileClick, debugSelectedPosition }: BoardProps) => {
                 <div
                     key={num}
                     style={{ backgroundColor: finalBgColor }}
-                    className="w-full h-full flex flex-col justify-between items-center p-1 relative overflow-hidden"
+                    className={`w-full h-full flex flex-col justify-between items-center p-1 relative overflow-hidden ${highlightedTile === num ? 'ring-4 ring-yellow-300 ring-inset' : ''}`}
                     onClick={() => onTileClick?.(num)}
                 >
                     {/* 1. Angka Kotak (Posisi di pojok kanan atas) */}
@@ -285,17 +284,10 @@ const Board = ({ players, onTileClick, debugSelectedPosition }: BoardProps) => {
                     
                     {/* Placeholder kosong untuk menjaga spacing flexbox jika tidak ada gambar */}
                     <div className="flex-1"></div>
-
-                    {/* Debug highlight: overlay ring ketika tile dipilih di mode debug */}
-                    {debugSelectedPosition === num && (
-                        <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                            <div style={{ width: '84%', height: '84%', borderRadius: 8, border: '4px solid rgba(255,255,255,0.95)', boxShadow: '0 0 12px rgba(0,0,0,0.25)' }} />
-                        </div>
-                    )}
                 </div>
             );
         })}
-      
+
             <svg viewBox="0 0 100 100" className="absolute top-0 left-0 w-full h-full pointer-events-none">
                 <defs>
                     <pattern id="snakePattern1" x="0" y="0" width="2" height="2" patternUnits="userSpaceOnUse">
