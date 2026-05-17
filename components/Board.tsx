@@ -243,7 +243,7 @@ const Board = ({ players, onTileClick, highlightedTile, onPlayerTokenClick }: Bo
     let normalIndex = 0;
 
     return (
-    <div className="relative w-full aspect-square grid grid-cols-10 grid-rows-10 gap-px bg-white/50">
+    <div className="relative w-full aspect-square grid grid-cols-10 grid-rows-10 gap-px bg-white/50 border-4 border-[#1E459F] rounded-lg overflow-hidden">
         {boardSquares.map((num) => {
             const tileType: TileType = BOARD_TILES[num] ?? TileType.GREEN;
             const finalBgColor = TILE_COLORS[tileType];

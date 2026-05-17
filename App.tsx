@@ -532,9 +532,9 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
                     </div>
 
                     {/* Board */}
-                    <div className="aspect-square w-full max-w-2xl mx-auto shadow-2xl rounded-lg overflow-hidden border-4 border-[#1E459F] bg-[#FAF8F1]">
-                       <Board players={players} onTileClick={handleTileClick} highlightedTile={debugSelectedPosition ?? undefined} onPlayerTokenClick={handlePlayerTokenClick} />
-                    </div>
+                          <div className="w-full max-w-2xl mx-auto shadow-2xl">
+                              <Board players={players} onTileClick={handleTileClick} highlightedTile={debugSelectedPosition ?? undefined} onPlayerTokenClick={handlePlayerTokenClick} />
+                          </div>
                 </main>
 
                 <aside className="w-full lg:w-1/3 flex flex-col items-center gap-6 bg-[#FAF8F1]/70 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-[#FABD32] relative">
