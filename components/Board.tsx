@@ -59,9 +59,12 @@ const GamePiece: React.FC<GamePieceProps & { onTokenClick?: (id: number | string
     const { x, y } = getSquareCoords(player.position);
     
     const containerStyle = {
-        transform: `translate(${x * 100}%, ${y * 100}%)`,
+        left: `${x * 10 + 5}%`, // center of the cell (each cell = 10%)
+        top: `${y * 10 + 5}%`,
+        transform: 'translate(-50%, -50%)', // center token on the point
         transition: 'transform 0.3s ease-in-out',
         zIndex: player.position,
+        position: 'absolute' as const,
     };
 
     const Avatar = player.avatar;
