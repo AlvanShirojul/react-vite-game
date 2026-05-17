@@ -140,8 +140,8 @@ const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 180;
     }
   }
 
-  return (
-    <g>
+    return (
+        <g filter="url(#snakeShadow)">
       {/* Outline/Garis Luar Badan */}
       <path
         d={pathData}
@@ -303,6 +303,10 @@ const Board = ({ players, onTileClick, highlightedTile, onPlayerTokenClick }: Bo
                     </pattern>
                     <pattern id="snakePattern3" patternUnits="userSpaceOnUse" width="8" height="4"><path d="M 0 0 H 8 V 4 H 0 Z" fill="#a855f7" /><path d="M -2 0 L 2 4 M 2 0 L 6 4 M 6 0 L 10 4" stroke="#f97316" strokeWidth="1.5" /></pattern>
                     <pattern id="snakePattern4" patternUnits="userSpaceOnUse" width="6" height="6"><path d="M 0 0 H 6 V 6 H 0 Z" fill="#e5e7eb" /><rect width="6" height="3" fill="#4b5563" /></pattern>
+                                        {/* Drop shadow filter for snakes */}
+                                        <filter id="snakeShadow" x="-50%" y="-50%" width="200%" height="200%">
+                                            <feDropShadow dx="0.8" dy="0.8" stdDeviation="1.2" floodColor="#000000" floodOpacity="0.25" />
+                                        </filter>
                 </defs>
                 {Object.entries(SNAKES_AND_LADDERS).map(([start, end]) => {
                     const from = parseInt(start);
