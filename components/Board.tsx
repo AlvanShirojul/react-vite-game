@@ -172,13 +172,11 @@ const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 180;
           fill="none"
         />
         
-        {/* Bentuk Kepala Oval/Berlian */}
-        <path
-          d="M -1 -2.5 C 2 -3, 4 -2, 4 0 C 4 2, 2 3, -1 2.5 C -2.5 2, -2.5 -2, -1 -2.5 Z"
-          fill={style.fill}
-          stroke="#2c2e2c"
-          strokeWidth={0.5}
-        />
+                {/* Bentuk Kepala Oval/Berlian (tanpa border) */}
+                <path
+                    d="M -1 -2.5 C 2 -3, 4 -2, 4 0 C 4 2, 2 3, -1 2.5 C -2.5 2, -2.5 -2, -1 -2.5 Z"
+                    fill={style.fill}
+                />
 
         {/* Mata */}
         <circle cx={1.5} cy={-1.2} r={0.6} fill="#000000" />
