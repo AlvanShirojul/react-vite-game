@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Board from './components/Board';
 import Dice from './components/Dice';
 import AvatarPicker from './components/AvatarPicker';
@@ -41,6 +41,9 @@ export default function App() {
     const [isDebugMode, setIsDebugMode] = useState(false);
     const [debugSelectedPlayerIndex, setDebugSelectedPlayerIndex] = useState<number | null>(null);
     const [debugSelectedPosition, setDebugSelectedPosition] = useState<number | null>(null);
+
+    const playersListRef = useRef<HTMLDivElement | null>(null);
+    const playerItemRefs = useRef<Array<HTMLDivElement | null>>([]);
 
     const [soundsInitialized, setSoundsInitialized] = useState(false);
     const [showRestartConfirm, setShowRestartConfirm] = useState(false);
@@ -179,6 +182,15 @@ export default function App() {
         setDebugSelectedPosition(null);
         setGameMessage(`Debug: ${players[idx].name} dipilih. Klik kotak di papan untuk memilih posisi.`);
     };
+
+    useEffect(() => {
+        if (!players || players.length === 0) return;
+        const el = playerItemRefs.current[currentPlayerIndex];
+        if (el && playersListRef.current) {
+            // ensure scrolling happens after render
+            setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+        }
+    }, [currentPlayerIndex, players.length]);
     const endTurnAfterFailure = useCallback((playerIndex: number, penaltySteps: number) => {
         setPlayers(prevPlayers => 
             prevPlayers.map((p, idx) => 
@@ -543,13 +555,14 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
                         <p className="text-lg text-[#1E459F]/90 mt-2 h-12 flex items-center justify-center">{gameMessage}</p>
                     </div>
 
-                    <div className="w-full space-y-2 max-h-60 overflow-y-auto pr-2">
+                    <div className="w-full space-y-2 max-h-60 overflow-y-auto pr-2" ref={playersListRef}>
                         {players.map((player, index) => {
                             const Avatar = player.avatar;
                             const isCurrent = index === currentPlayerIndex;
                             const isDebugSelected = index === debugSelectedPlayerIndex;
                             return (
                                 <div
+                                    ref={el => playerItemRefs.current[index] = el}
                                     key={player.id}
                                     onClick={() => {
                                         if (isDebugMode) {
