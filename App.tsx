@@ -540,7 +540,7 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
                         
                         <div className="flex items-center gap-3 text-sm">
                             <div className="w-8 h-8 bg-green-500 rounded-md flex-shrink-0 shadow-md"></div>
-                            <span className="font-medium text-[#1E459F]">Skip 1×</span>
+                            <span className="font-medium text-[#1E459F]">+ 1 langkah</span>
                         </div>
                     </div>
 
