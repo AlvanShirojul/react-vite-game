@@ -500,7 +500,7 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
             </header>
 
             <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8 items-stretch">
-                <main className="w-full lg:w-2/3 flex gap-4 items-stretch">
+                <main className="w-full lg:w-3/4 flex gap-4 items-stretch">
                     {/* Rules Panel */}
                     <div className="hidden lg:flex flex-col justify-center gap-3 p-4 bg-[#FAF8F1]/70 backdrop-blur-sm rounded-lg shadow-lg border-2 border-[#1E459F]">
                         <h3 className="text-lg font-bold text-[#1E459F] text-center whitespace-nowrap">Rules</h3>
@@ -537,7 +537,7 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
                           </div>
                 </main>
 
-                <aside className="w-full lg:w-1/3 flex flex-col items-center gap-6 bg-[#FAF8F1]/70 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-[#FABD32] relative">
+                <aside className="w-full lg:w-1/4 flex flex-col items-center gap-6 bg-[#FAF8F1]/70 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-[#FABD32] relative">
                     <div className="w-full text-center">
                         <h3 className="text-2xl font-bold text-[#1E459F] font-display">Game Status</h3>
                         <p className="text-lg text-[#1E459F]/90 mt-2 h-12 flex items-center justify-center">{gameMessage}</p>
