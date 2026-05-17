@@ -39,7 +39,7 @@ export default function App() {
     const [greenModal, setGreenModal] = useState(false);
     const [interactionUsedThisTurn, setInteractionUsedThisTurn] = useState<number | null>(null);
     const [isDebugMode, setIsDebugMode] = useState(false);
-    const [debugEditingPlayer, setDebugEditingPlayer] = useState<number | null>(null);
+    const [debugSelectedPlayerIndex, setDebugSelectedPlayerIndex] = useState<number | null>(null);
     const [debugSelectedPosition, setDebugSelectedPosition] = useState<number | null>(null);
 
     const [soundsInitialized, setSoundsInitialized] = useState(false);
@@ -80,6 +80,20 @@ export default function App() {
         setCurrentPlayerIndex(0);
         setWinner(null);
         setGameMessage(`${finalPlayers[0].name}'s turn to roll!`);
+    };
+
+    const confirmDebugMove = () => {
+        if (debugSelectedPlayerIndex === null || debugSelectedPosition === null) return;
+        setPlayers(prev => prev.map((p, i) => i === debugSelectedPlayerIndex ? { ...p, position: debugSelectedPosition } : p));
+        setGameMessage(`${players[debugSelectedPlayerIndex].name} dipindahkan ke posisi ${debugSelectedPosition}`);
+        setDebugSelectedPlayerIndex(null);
+        setDebugSelectedPosition(null);
+    };
+
+    const cancelDebugSelection = () => {
+        setDebugSelectedPosition(null);
+        // keep selected player so user can pick another tile
+        setGameMessage('Debug: pemilihan posisi dibatalkan. Pilih kotak lain atau batal pilih pemain.');
     };
 
     const requestRestart = () => {
@@ -141,18 +155,29 @@ export default function App() {
         setTimeout(() => endTurn(currentPlayerIndex), 500);
     };
     const handleTileClick = (position: number) => {
-        // Debug: if editing a player, select the tile as the new position
-        if (isDebugMode && debugEditingPlayer !== null) {
-            setDebugSelectedPosition(position);
-            setGameMessage(`${players[debugEditingPlayer].name} akan dipindahkan ke posisi ${position}. Klik konfirmasi untuk menyimpan.`);
+        if (isDebugMode) {
+            // Jika ada pemain yang dipilih untuk debug, simpan pilihan posisi untuk konfirmasi
+            if (debugSelectedPlayerIndex !== null) {
+                setDebugSelectedPosition(position);
+                const target = players[debugSelectedPlayerIndex];
+                setGameMessage(`Pilih kotak: akan memindahkan ${target.name} ke posisi ${position}. Konfirmasi.`);
+            } else {
+                setGameMessage('Debug: pilih pemain dulu dari Game Status sebelum memilih kotak.');
+            }
             return;
         }
 
-        // Non-debug quick move for current player (legacy/dev)
-        if (isDebugMode) {
-            // when debug on but not editing, ignore tile clicks
-            return;
-        }
+        // Normal behaviour (non-debug): pindahkan player saat ini (untuk testing cepat)
+        setPlayers(prev => prev.map((p, i) => i === currentPlayerIndex ? { ...p, position } : p));
+    };
+
+    const handlePlayerTokenClick = (playerId: number | string) => {
+        if (!isDebugMode) return;
+        const idx = players.findIndex(p => p.id === playerId);
+        if (idx === -1) return;
+        setDebugSelectedPlayerIndex(prev => (prev === idx ? null : idx));
+        setDebugSelectedPosition(null);
+        setGameMessage(`Debug: ${players[idx].name} dipilih. Klik kotak di papan untuk memilih posisi.`);
     };
     const endTurnAfterFailure = useCallback((playerIndex: number, penaltySteps: number) => {
         setPlayers(prevPlayers => 
@@ -508,7 +533,7 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
 
                     {/* Board */}
                     <div className="aspect-square w-full max-w-2xl mx-auto shadow-2xl rounded-lg overflow-hidden border-4 border-[#1E459F] bg-[#FAF8F1]">
-                       <Board players={players} onTileClick={handleTileClick} debugSelectedPosition={debugSelectedPosition} />
+                       <Board players={players} onTileClick={handleTileClick} highlightedTile={debugSelectedPosition ?? undefined} onPlayerTokenClick={handlePlayerTokenClick} />
                     </div>
                 </main>
 
@@ -522,61 +547,30 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
                         {players.map((player, index) => {
                             const Avatar = player.avatar;
                             const isCurrent = index === currentPlayerIndex;
-                            const isEditing = isDebugMode && debugEditingPlayer === index;
+                            const isDebugSelected = index === debugSelectedPlayerIndex;
                             return (
                                 <div
                                     key={player.id}
                                     onClick={() => {
                                         if (isDebugMode) {
+                                            setDebugSelectedPlayerIndex(idx => (idx === index ? null : index));
                                             setDebugSelectedPosition(null);
-                                            setDebugEditingPlayer(prev => prev === index ? null : index);
-                                            setGameMessage(`${player.name} dipilih untuk debug`);
+                                            setGameMessage(`Debug: ${player.name} dipilih. Klik kotak di papan untuk memilih posisi.`);
                                         }
                                     }}
-                                    className={`flex items-center gap-4 p-3 rounded-lg border-2 transition-all ${isCurrent && gameStatus === 'IN_PROGRESS' ? 'shadow-lg scale-105' : ''} ${isDebugMode ? 'cursor-pointer hover:opacity-95' : ''}`}
-                                    style={{ borderColor: isEditing ? '#ffffff' : player.color, backgroundColor: isEditing ? player.color : (isCurrent ? player.color : 'transparent') }}
+                                    className={`flex items-center gap-4 p-3 rounded-lg border-2 transition-all ${isCurrent && gameStatus === 'IN_PROGRESS' ? 'shadow-lg scale-105' : ''} ${isDebugSelected ? 'ring-4 ring-[#FABD32]' : ''}`}
+                                    style={{ borderColor: player.color, backgroundColor: isCurrent ? player.color : 'transparent', cursor: isDebugMode ? 'pointer' : 'default' }}
                                 >
-                                    <Avatar className="h-8 w-8" style={{ color: isEditing ? 'white' : player.color }} />
-                                    <span className="font-bold flex-1" style={{ color: isEditing ? 'white' : player.color }}>{player.name}</span>
+                                    <Avatar className="h-8 w-8" style={{ color: isCurrent ? 'white' : player.color }} />
+                                    <span className="font-bold flex-1" style={{ color: isCurrent ? 'white' : player.color }}>{player.name}{isDebugSelected ? ' (Selected)' : ''}</span>
                                     <div className="flex flex-col items-end gap-1">
-                                        <span className="text-xs font-semibold" style={{ color: isEditing ? 'white' : player.color }}>Posisi</span>
+                                        <span className="text-xs font-semibold" style={{ color: isCurrent ? 'white' : player.color }}>Posisi</span>
                                         <span className="text-2xl font-bold font-mono bg-white px-3 py-1 rounded" style={{ color: player.color }}>{player.position}</span>
                                     </div>
                                 </div>
                             );
                         })}
                     </div>
-
-                    {/* Debug confirm area */}
-                    {isDebugMode && debugEditingPlayer !== null && (
-                        <div className="w-full mt-3 p-3 bg-white rounded-lg border-2 border-dashed">
-                            <p className="text-sm text-[#1E459F] mb-2">Memilih: <strong>{players[debugEditingPlayer].name}</strong></p>
-                            <p className="text-sm text-[#1E459F] mb-3">Posisi terpilih: <strong>{debugSelectedPosition ?? '-'}</strong></p>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => {
-                                        if (debugSelectedPosition !== null) {
-                                            const idx = debugEditingPlayer;
-                                            setPlayers(prev => prev.map((p, i) => i === idx ? { ...p, position: debugSelectedPosition } : p));
-                                            setGameMessage(`${players[idx].name} berhasil dipindahkan ke posisi ${debugSelectedPosition}`);
-                                            setDebugEditingPlayer(null);
-                                            setDebugSelectedPosition(null);
-                                        }
-                                    }}
-                                    disabled={debugSelectedPosition === null}
-                                    className="flex-1 bg-green-500 text-white py-2 rounded-lg disabled:opacity-50"
-                                >
-                                    Konfirmasi
-                                </button>
-                                <button
-                                    onClick={() => { setDebugEditingPlayer(null); setDebugSelectedPosition(null); setGameMessage('Debug edit dibatalkan.'); }}
-                                    className="flex-1 bg-gray-200 text-gray-800 py-2 rounded-lg"
-                                >
-                                    Batal
-                                </button>
-                            </div>
-                        </div>
-                    )}
 
                     <div className="w-full flex flex-col items-center gap-4">
                         <Dice value={diceValue} isRolling={isRolling} />
@@ -632,6 +626,19 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
                 message={challengeState.message}
                 onComplete={handleChallengeClose}
             />
+            {/* Debug Confirm Modal */}
+            {debugSelectedPlayerIndex !== null && debugSelectedPosition !== null && (
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[160] backdrop-blur-sm">
+                    <div className="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full text-center border-4 border-[#FABD32]">
+                        <h2 className="text-2xl font-bold text-[#1E459F] mb-2">Konfirmasi Pindah Pemain</h2>
+                        <p className="mb-4">Apakah Anda yakin ingin memindahkan <strong>{players[debugSelectedPlayerIndex].name}</strong> ke posisi <strong>{debugSelectedPosition}</strong>?</p>
+                        <div className="flex gap-4">
+                            <button onClick={confirmDebugMove} className="flex-1 bg-green-500 text-white py-2 rounded-xl font-bold">Ya, Pindah</button>
+                            <button onClick={cancelDebugSelection} className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-xl font-bold">Batal</button>
+                        </div>
+                    </div>
+                </div>
+            )}
                                 {showRestartConfirm && (
                         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[150] backdrop-blur-sm">
                             <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center border-4 border-red-500">

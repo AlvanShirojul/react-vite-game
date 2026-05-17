@@ -10,6 +10,7 @@ interface BoardProps {
     players: Player[];
     onTileClick?: (position: number) => void;
     highlightedTile?: number;
+    onPlayerTokenClick?: (playerId: number | string) => void;
 }
 
 const BOARD_DIMENSION = 10;
@@ -54,7 +55,7 @@ interface GamePieceProps {
 }
 
 // FIX: Changed component definition to use React.FC to correctly type props and handle the 'key' prop.
-const GamePiece: React.FC<GamePieceProps> = ({ player, offsetStyle }) => {
+const GamePiece: React.FC<GamePieceProps & { onTokenClick?: (id: string) => void }> = ({ player, offsetStyle, onTokenClick }) => {
     const { x, y } = getSquareCoords(player.position);
     
     const containerStyle = {
@@ -65,10 +66,11 @@ const GamePiece: React.FC<GamePieceProps> = ({ player, offsetStyle }) => {
 
     const Avatar = player.avatar;
     return (
-        <div className={`absolute w-[10%] h-[10%] p-1`} style={containerStyle}>
+        <div className={`absolute w-[10%] h-[10%] p-1`} style={{ ...containerStyle, pointerEvents: 'none' }}>
             <div 
                 className={`w-full h-full rounded-full shadow-lg flex items-center justify-center text-white border-2 border-white transition-transform duration-300`} 
-                style={{ backgroundColor: player.color, ...offsetStyle }}
+                style={{ backgroundColor: player.color, ...offsetStyle, pointerEvents: 'auto' }}
+                onClick={() => onTokenClick?.(player.id)}
             >
                 <Avatar className="w-full h-full p-1" />
             </div>
@@ -329,7 +331,7 @@ const Board = ({ players, onTileClick, highlightedTile }: BoardProps) => {
                     };
                 }
 
-                return <GamePiece key={player.id} player={player} offsetStyle={offsetStyle} />;
+                return <GamePiece key={player.id} player={player} offsetStyle={offsetStyle} onTokenClick={onPlayerTokenClick} />;
             })}
         </div>
     );
