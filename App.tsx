@@ -499,8 +499,8 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
                 <h2 className="text-xl md:text-2xl text-[#CF2A2A] font-display">Motifasi Belajar</h2>
             </header>
 
-            <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8">
-                <main className="w-full lg:w-2/3 flex gap-4">
+            <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8 items-stretch">
+                <main className="w-full lg:w-2/3 flex gap-4 items-stretch">
                     {/* Rules Panel */}
                     <div className="hidden lg:flex flex-col justify-center gap-3 p-4 bg-[#FAF8F1]/70 backdrop-blur-sm rounded-lg shadow-lg border-2 border-[#1E459F]">
                         <h3 className="text-lg font-bold text-[#1E459F] text-center whitespace-nowrap">Rules</h3>
@@ -532,7 +532,7 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
                     </div>
 
                     {/* Board */}
-                          <div className="w-full max-w-2xl mx-auto shadow-2xl">
+                          <div className="flex-1 h-full flex items-center justify-center">
                               <Board players={players} onTileClick={handleTileClick} highlightedTile={debugSelectedPosition ?? undefined} onPlayerTokenClick={handlePlayerTokenClick} />
                           </div>
                 </main>
