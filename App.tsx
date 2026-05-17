@@ -556,7 +556,7 @@ const handleInteractionResult = useCallback((wasSuccessful: boolean, playerIndex
                         <p className="text-lg text-[#1E459F]/90 mt-2 h-12 flex items-center justify-center">{gameMessage}</p>
                     </div>
 
-                    <div className="w-full space-y-2 max-h-60 overflow-y-auto pr-2" ref={playersListRef}>
+                    <div className="w-full space-y-2 max-h-[40vh] lg:max-h-60 overflow-y-auto pr-2" ref={playersListRef}>
                         {players.map((player, index) => {
                             const Avatar = player.avatar;
                             const isCurrent = index === currentPlayerIndex;

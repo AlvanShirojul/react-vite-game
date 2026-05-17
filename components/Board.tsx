@@ -66,7 +66,7 @@ const GamePiece: React.FC<GamePieceProps & { onTokenClick?: (id: number | string
 
     const Avatar = player.avatar;
     return (
-        <div className={`absolute w-[10%] h-[10%] p-1`} style={{ ...containerStyle, pointerEvents: 'none' }}>
+        <div className={`absolute w-[10%] h-[10%] p-1 min-w-[28px] min-h-[28px] max-w-[64px] max-h-[64px]`} style={{ ...containerStyle, pointerEvents: 'none' }}>
             <div 
                 className={`w-full h-full rounded-full shadow-lg flex items-center justify-center text-white border-2 border-white transition-transform duration-300`} 
                 style={{ backgroundColor: player.color, ...offsetStyle, pointerEvents: 'auto' }}
@@ -243,7 +243,7 @@ const Board = ({ players, onTileClick, highlightedTile, onPlayerTokenClick }: Bo
     let normalIndex = 0;
 
     return (
-    <div className="relative h-full aspect-square w-auto max-w-full mx-auto grid grid-cols-10 grid-rows-10 gap-px bg-white/50 border-4 border-[#1E459F] rounded-lg overflow-hidden">
+    <div className="relative w-[min(90vw,70vh)] h-[min(90vw,70vh)] aspect-square mx-auto grid grid-cols-10 grid-rows-10 gap-px bg-white/50 border-4 border-[#1E459F] rounded-lg overflow-hidden">
         {boardSquares.map((num) => {
             const tileType: TileType = BOARD_TILES[num] ?? TileType.GREEN;
             const finalBgColor = TILE_COLORS[tileType];
