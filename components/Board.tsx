@@ -55,7 +55,7 @@ interface GamePieceProps {
 }
 
 // FIX: Changed component definition to use React.FC to correctly type props and handle the 'key' prop.
-const GamePiece: React.FC<GamePieceProps & { onTokenClick?: (id: string) => void }> = ({ player, offsetStyle, onTokenClick }) => {
+const GamePiece: React.FC<GamePieceProps & { onTokenClick?: (id: number | string) => void }> = ({ player, offsetStyle, onTokenClick }) => {
     const { x, y } = getSquareCoords(player.position);
     
     const containerStyle = {
@@ -228,7 +228,7 @@ const Ladder: React.FC<LadderProps> = ({ from, to, style }) => {
     );
 };
 
-const Board = ({ players, onTileClick, highlightedTile }: BoardProps) => {
+const Board = ({ players, onTileClick, highlightedTile, onPlayerTokenClick }: BoardProps) => {
     let snakeIndex = 0;
     let ladderIndex = 0;
 
@@ -243,7 +243,7 @@ const Board = ({ players, onTileClick, highlightedTile }: BoardProps) => {
     let normalIndex = 0;
 
     return (
-    <div className="relative w-full h-full grid grid-cols-10 grid-rows-10 gap-px bg-white/50">
+    <div className="relative w-full aspect-square grid grid-cols-10 grid-rows-10 gap-px bg-white/50">
         {boardSquares.map((num) => {
             const tileType: TileType = BOARD_TILES[num] ?? TileType.GREEN;
             const finalBgColor = TILE_COLORS[tileType];
